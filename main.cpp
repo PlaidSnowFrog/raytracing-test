@@ -9,8 +9,8 @@ int findGradient(int xa, int ya, int xb, int yb) {
   return ((ya - yb) / (xa - xb));
 }
 
-int findY(int originX, int aX, float gradient) {
-  int finalX = {aX - originX};
+int findY(int originX, int aX, int gradient) {
+  int finalX = aX - originX;
 
   return gradient * finalX;
 }
@@ -28,10 +28,13 @@ void findCentreOfRect(int *x, int *y, SDL_Rect rect) {
 }
 
 int main() {
+  const int SCREENWIDTH = 600;
+  const int SCREENHEIGHT = 400;
+
   SDL_Init(SDL_INIT_VIDEO);
   SDL_Window *window =
       SDL_CreateWindow("raytracing", SDL_WINDOWPOS_CENTERED, SDL_WINDOWPOS_CENTERED,
-                       600, 400, SDL_WINDOW_SHOWN);
+                       SCREENWIDTH, SCREENHEIGHT, SDL_WINDOW_SHOWN);
   SDL_Renderer *renderer =
       SDL_CreateRenderer(window, -1, SDL_RENDERER_ACCELERATED);
 
@@ -40,6 +43,7 @@ int main() {
 
   int centreYLightSource;
   int centreXLightSource;
+  int finalY;
 
   int gradient;
   int intersections[2];
@@ -63,23 +67,19 @@ int main() {
     
     // Game Logic
     findCentreOfRect(&centreXLightSource, &centreYLightSource, lightSource);
-    //gradient = findGradient(centreXLightSource, centreYLightSource, rect.x, rect.y);
+    gradient = findGradient(centreXLightSource, centreYLightSource, rect.x, rect.y);
+    finalY = findY(centreXLightSource, centreYLightSource, gradient);
 
-    SDL_RenderDrawLine(renderer, centreXLightSource, centreYLightSource,
-                      rect.x, rect.y);
-
-    // TODO: Get rect center and use coordinates of that to find the intersections with
-    //      the edge of the screen and then use those and the edges of the rect to 
-    //      cast shadows
 
     // Draw
     SDL_SetRenderDrawColor(renderer, 0, 0, 0, 255);
     SDL_RenderClear(renderer);
 
-    SDL_SetRenderDrawColor(renderer, 255, 255, 255, 255);
+    SDL_SetRenderDrawColor(renderer, 255, 0, 0, 255);
 
     SDL_RenderFillRect(renderer, &rect);
     SDL_RenderFillRect(renderer, &lightSource);
+    SDL_RenderDrawLine(renderer, centreXLightSource, centreYLightSource, SCREENWIDTH, finalY);
 
     SDL_RenderPresent(renderer);
 
