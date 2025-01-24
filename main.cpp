@@ -5,6 +5,28 @@
 #include <SDL2/SDL_render.h>
 #include "formulae/formulae.hpp"
 
+int findGradient(int xa, int ya, int xb, int yb) {
+  return ((ya - yb) / (xa - xb));
+}
+
+int findY(int originX, int aX, float gradient) {
+  int finalX = {aX - originX};
+
+  return gradient * finalX;
+}
+
+void findCentreOfRect(int *x, int *y, SDL_Rect rect) {
+  // Check if pointers are valid
+  if (x != NULL && y != NULL) {
+    // Calculate center point
+    *x = (rect.x + (rect.w / 2));
+    *y = (rect.y + (rect.h / 2));
+  } else {
+    // Handle invalid pointer case
+    printf("Error: Invalid pointer passed\n");
+  }
+}
+
 int main() {
   SDL_Init(SDL_INIT_VIDEO);
   SDL_Window *window =
@@ -15,6 +37,7 @@ int main() {
 
   SDL_Rect rect = {400, 200, 50, 50};
   SDL_Rect lightSource = {200, 200, 50, 50};
+
   int centreYLightSource;
   int centreXLightSource;
 
@@ -39,8 +62,11 @@ int main() {
     }
     
     // Game Logic
-    findCentreOfRect(centreXLightSource, centreYLightSource, lightSource);
-    gradient = findGradient();
+    findCentreOfRect(&centreXLightSource, &centreYLightSource, lightSource);
+    //gradient = findGradient(centreXLightSource, centreYLightSource, rect.x, rect.y);
+
+    SDL_RenderDrawLine(renderer, centreXLightSource, centreYLightSource,
+                      rect.x, rect.y);
 
     // TODO: Get rect center and use coordinates of that to find the intersections with
     //      the edge of the screen and then use those and the edges of the rect to 
