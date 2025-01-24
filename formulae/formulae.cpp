@@ -1,8 +1,8 @@
 #include "formulae.hpp"
 #include <SDL2/SDL.h>
 
-int findGradient(int A[2], int B[2]) {
-    return ((A[1] - B[1]) / (A[0] - B[0]));
+int findGradient(int xa, int ya, int xb, int yb) {
+    return ((ya - yb) / (xa - xb));
 }
 
 int findY(int originX, int aX, float gradient) {
@@ -12,6 +12,6 @@ int findY(int originX, int aX, float gradient) {
 }
 
 void findCentreOfRect(int *x, int *y, SDL_Rect rect) {
-    x = (rect.x + (rect.w/2);
-    y = (rect.y + (rect.h/2);
+    *x = (rect.x + (rect.w/2));
+    *y = (rect.y + (rect.h/2));
 }

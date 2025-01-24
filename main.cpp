@@ -5,8 +5,6 @@
 #include <SDL2/SDL_render.h>
 #include "formulae/formulae.hpp"
 
-#include <iostream>
-
 int main() {
   SDL_Init(SDL_INIT_VIDEO);
   SDL_Window *window =
@@ -17,6 +15,8 @@ int main() {
 
   SDL_Rect rect = {400, 200, 50, 50};
   SDL_Rect lightSource = {200, 200, 50, 50};
+  int centreYLightSource;
+  int centreXLightSource;
 
   int gradient;
   int intersections[2];
@@ -39,7 +39,8 @@ int main() {
     }
     
     // Game Logic
-    //gradient = findGradient();
+    findCentreOfRect(centreXLightSource, centreYLightSource, lightSource);
+    gradient = findGradient();
 
     // TODO: Get rect center and use coordinates of that to find the intersections with
     //      the edge of the screen and then use those and the edges of the rect to 
