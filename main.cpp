@@ -31,50 +31,48 @@ void findCentreOfRect(int *x, int *y, SDL_Rect rect) {
 
 void drawLines(int originX, int originY, const SDL_Rect *intersectRect,
                SDL_Renderer *renderer, int SCREENWIDTH, int SCREENHEIGHT) {
-  // pointers
-  int *pOriginX = &originX;
-  int *pOriginY = &originY;
-
   // loops
   for (int i = 0; i <= SCREENWIDTH; i += 5) {
-    if (SDL_IntersectRectAndLine(intersectRect, pOriginX, pOriginY, &i,
-                                 &SCREENHEIGHT) == SDL_FALSE) {
-      SDL_RenderDrawLine(renderer, originX, originY, i, SCREENHEIGHT);
-    } else {
-      continue;
+    int endX = i;
+    int endY = SCREENHEIGHT;
+    
+    // Check for intersection before drawing the line
+    if (SDL_IntersectRectAndLine(intersectRect, &originX, &originY, &endX, &endY) == SDL_FALSE) {
+      SDL_RenderDrawLine(renderer, originX, originY, endX, endY);
     }
   }
 
   for (int i = SCREENWIDTH; i >= 0; i -= 5) {
-    if (SDL_IntersectRectAndLine(intersectRect, pOriginX, pOriginY, &i,
-                                 0) == SDL_FALSE) {
-      SDL_RenderDrawLine(renderer, originX, originY, i, 0);
-    } else {
-      continue;
+    int endX = i;
+    int endY = 0;
+
+    // Check for intersection before drawing the line
+    if (SDL_IntersectRectAndLine(intersectRect, &originX, &originY, &endX, &endY) == SDL_FALSE) {
+      SDL_RenderDrawLine(renderer, originX, originY, endX, endY);
     }
   }
 
   for (int i = 0; i <= SCREENHEIGHT; i += 5) {
-    if (SDL_IntersectRectAndLine(intersectRect, pOriginX, pOriginY, &SCREENWIDTH,
-                                 &i) == SDL_FALSE) {
+    int endX = SCREENWIDTH;
+    int endY = i;
 
-      SDL_RenderDrawLine(renderer, originX, originY, SCREENWIDTH, i);
-    } else {
-      continue;
+    // Check for intersection before drawing the line
+    if (SDL_IntersectRectAndLine(intersectRect, &originX, &originY, &endX, &endY) == SDL_FALSE) {
+      SDL_RenderDrawLine(renderer, originX, originY, endX, endY);
     }
   }
 
   for (int i = SCREENHEIGHT; i >= 0; i -= 5) {
+    int endX = 0;
+    int endY = i;
 
-    if (SDL_IntersectRectAndLine(intersectRect, pOriginX, pOriginY, 0,
-                                 &i) == SDL_FALSE) {
-
-      SDL_RenderDrawLine(renderer, originX, originY, 0, i);
-    } else {
-      continue;
+    // Check for intersection before drawing the line
+    if (SDL_IntersectRectAndLine(intersectRect, &originX, &originY, &endX, &endY) == SDL_FALSE) {
+      SDL_RenderDrawLine(renderer, originX, originY, endX, endY);
     }
   }
 }
+
 
 int main() {
   const int SCREENWIDTH = 600;
@@ -137,7 +135,7 @@ int main() {
 
     SDL_RenderPresent(renderer);
 
-    SDL_Delay(10);
+    SDL_Delay(25);
   }
 
   SDL_DestroyRenderer(renderer);
