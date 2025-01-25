@@ -1,9 +1,11 @@
+#include "formulae/formulae.hpp"
 #include <SDL2/SDL.h>
 #include <SDL2/SDL_events.h>
 #include <SDL2/SDL_image.h>
 #include <SDL2/SDL_mouse.h>
+#include <SDL2/SDL_rect.h>
 #include <SDL2/SDL_render.h>
-#include "formulae/formulae.hpp"
+#include <SDL2/SDL_stdinc.h>
 
 int findGradient(int xa, int ya, int xb, int yb) {
   return ((ya - yb) / (xa - xb));
@@ -27,14 +29,61 @@ void findCentreOfRect(int *x, int *y, SDL_Rect rect) {
   }
 }
 
+void drawLines(int originX, int originY, const SDL_Rect *intersectRect,
+               SDL_Renderer *renderer, int SCREENWIDTH, int SCREENHEIGHT) {
+  // pointers
+  int *pOriginX = &originX;
+  int *pOriginY = &originY;
+
+  // loops
+  for (int i = 0; i <= SCREENWIDTH; i += 5) {
+    if (SDL_IntersectRectAndLine(intersectRect, pOriginX, pOriginY, &i,
+                                 &SCREENHEIGHT) == SDL_FALSE) {
+      SDL_RenderDrawLine(renderer, originX, originY, i, SCREENHEIGHT);
+    } else {
+      continue;
+    }
+  }
+
+  for (int i = SCREENWIDTH; i >= 0; i -= 5) {
+    if (SDL_IntersectRectAndLine(intersectRect, pOriginX, pOriginY, &i,
+                                 0) == SDL_FALSE) {
+      SDL_RenderDrawLine(renderer, originX, originY, i, 0);
+    } else {
+      continue;
+    }
+  }
+
+  for (int i = 0; i <= SCREENHEIGHT; i += 5) {
+    if (SDL_IntersectRectAndLine(intersectRect, pOriginX, pOriginY, &SCREENWIDTH,
+                                 &i) == SDL_FALSE) {
+
+      SDL_RenderDrawLine(renderer, originX, originY, SCREENWIDTH, i);
+    } else {
+      continue;
+    }
+  }
+
+  for (int i = SCREENHEIGHT; i >= 0; i -= 5) {
+
+    if (SDL_IntersectRectAndLine(intersectRect, pOriginX, pOriginY, 0,
+                                 &i) == SDL_FALSE) {
+
+      SDL_RenderDrawLine(renderer, originX, originY, 0, i);
+    } else {
+      continue;
+    }
+  }
+}
+
 int main() {
   const int SCREENWIDTH = 600;
   const int SCREENHEIGHT = 400;
 
   SDL_Init(SDL_INIT_VIDEO);
-  SDL_Window *window =
-      SDL_CreateWindow("raytracing", SDL_WINDOWPOS_CENTERED, SDL_WINDOWPOS_CENTERED,
-                       SCREENWIDTH, SCREENHEIGHT, SDL_WINDOW_SHOWN);
+  SDL_Window *window = SDL_CreateWindow("raytracing", SDL_WINDOWPOS_CENTERED,
+                                        SDL_WINDOWPOS_CENTERED, SCREENWIDTH,
+                                        SCREENHEIGHT, SDL_WINDOW_SHOWN);
   SDL_Renderer *renderer =
       SDL_CreateRenderer(window, -1, SDL_RENDERER_ACCELERATED);
 
@@ -64,12 +113,12 @@ int main() {
         break;
       }
     }
-    
+
     // Game Logic
     findCentreOfRect(&centreXLightSource, &centreYLightSource, lightSource);
-    gradient = findGradient(centreXLightSource, centreYLightSource, rect.x, rect.y);
+    gradient =
+        findGradient(centreXLightSource, centreYLightSource, rect.x, rect.y);
     finalY = findY(centreXLightSource, centreYLightSource, gradient);
-
 
     // Draw
     SDL_SetRenderDrawColor(renderer, 0, 0, 0, 255);
@@ -78,8 +127,13 @@ int main() {
     SDL_SetRenderDrawColor(renderer, 255, 0, 0, 255);
 
     SDL_RenderFillRect(renderer, &rect);
+
+    SDL_SetRenderDrawColor(renderer, 255, 255, 0, 255);
+    drawLines(centreXLightSource, centreYLightSource, &rect, renderer,
+              SCREENWIDTH, SCREENHEIGHT);
+
+    SDL_SetRenderDrawColor(renderer, 0, 0, 0, 255);
     SDL_RenderFillRect(renderer, &lightSource);
-    SDL_RenderDrawLine(renderer, centreXLightSource, centreYLightSource, SCREENWIDTH, finalY);
 
     SDL_RenderPresent(renderer);
 
